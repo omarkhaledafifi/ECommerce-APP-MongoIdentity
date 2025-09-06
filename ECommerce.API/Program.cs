@@ -38,6 +38,7 @@ namespace ECommerce.API
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(Services.AssemblyReference).Assembly);
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddScoped<IImageHelper, ImageHelper>();
             builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -15,10 +15,10 @@ namespace Services.Abstraction
         Task<PaginatedResponse<ProductResponse>> GetAllProductsAsync(ProductQueryParameters parameters);
         //GetProduct
         Task<ProductResponse> GetProductAsync(int id);
-        //GetBrands
-        Task<IEnumerable<BrandResponse>> GetBrandsAsync();
-        //GetTypes
-        Task<IEnumerable<TypeResponse>> GetTypesAsync();
+        Task<ProductResponse?> CreateProductAsync(CreateProductRequest request);
+        Task<ProductResponse?> UpdateProductAsync(int id, UpdateProductRequest request);
+        Task<bool> DeleteProductAsync(int id);
+        
 
     }
 }

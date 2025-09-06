@@ -20,7 +20,16 @@ namespace Services.MappingProfiles
                                                  .ForMember(d => d.PictureUrl, opt => opt.MapFrom<PictureResolver>());
             CreateMap<ProductBrand, BrandResponse>().ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.BrandName));
             CreateMap<ProductType, TypeResponse>().ForMember(d => d.Name, opt => opt.MapFrom(s => s.TypeName));
-            
+
+            CreateMap<CreateProductRequest, Product>()
+            .ForMember(dest => dest.BrandId, opt => opt.MapFrom(src => src.BrandId))
+            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.TypeId));
+
+            CreateMap<UpdateProductRequest, Product>()
+            .ForMember(dest => dest.BrandId, opt => opt.MapFrom(src => src.BrandId))
+            .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.TypeId))
+            .ForMember(dest => dest.PictureUrl, opt => opt.Ignore());
+
         }
 
     }

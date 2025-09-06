@@ -6,15 +6,10 @@ using Services.Specifications;
 using Shared;
 using Shared.DTOs;
 using Shared.DTOs.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services
 {
-    public class ProductService(IUnitOfWork unitOfWork, IMapper mapper) : IProductService
+    public class ProductService(IUnitOfWork unitOfWork, IMapper mapper, IImageHelper imageHelper) : IProductService
     {
         public async Task<PaginatedResponse<ProductResponse>> GetAllProductsAsync(ProductQueryParameters parameters)
         {
@@ -31,22 +26,56 @@ namespace Services
         {
             var speccificatios = new ProductWithBrandAndTypeSpecifications(id);
             var data = await unitOfWork.GetRepository<Product, int>().GetAsync(speccificatios);
-            //var data = await repo.GetAsync(id);
             return mapper.Map<Product, ProductResponse>(data);
         }
 
-        public async Task<IEnumerable<BrandResponse>> GetBrandsAsync()
+        public async Task<ProductResponse> CreateProductAsync(CreateProductRequest request)
         {
-            var repo = unitOfWork.GetRepository<ProductBrand, int>();
-            var data = await repo.GetAllAsync();
-            return mapper.Map<IEnumerable<ProductBrand>, IEnumerable<BrandResponse>>(data);
+            var repo = unitOfWork.GetRepository<Product, int>();
+            var product = mapper.Map<CreateProductRequest, Product>(request);
+            product.PictureUrl = await imageHelper.SaveImageAsync(request.PictureUrl, "Products");
+            await repo.AddAsync(product);
+
+            await unitOfWork.SaveChangesAsync();
+
+            return mapper.Map<Product, ProductResponse>(product);
         }
 
-        public async Task<IEnumerable<TypeResponse>> GetTypesAsync()
+        // ---------------- UPDATE ----------------
+        public async Task<ProductResponse?> UpdateProductAsync(int id, UpdateProductRequest request)
         {
-            var repo = unitOfWork.GetRepository<ProductType, int>();
-            var data = await repo.GetAllAsync();
-            return mapper.Map<IEnumerable<ProductType>, IEnumerable<TypeResponse>>(data);
+            var repo = unitOfWork.GetRepository<Product, int>();
+            var entity = await repo.GetAsync(id);
+
+            if (entity == null)
+                return null;
+
+            if(!(request.PictureUrl == null || request.PictureUrl.Length == 0) && imageHelper.DeleteImage(entity.PictureUrl))
+                entity.PictureUrl = await imageHelper.SaveImageAsync(request.PictureUrl, "Products");
+            mapper.Map(request, entity);
+
+            repo.UpdateAsync(entity);
+            await unitOfWork.SaveChangesAsync();
+
+            return mapper.Map<Product, ProductResponse>(entity);
         }
+
+        // ---------------- DELETE ----------------
+        public async Task<bool> DeleteProductAsync(int id)
+        {
+            var repo = unitOfWork.GetRepository<Product, int>();
+            var entity = await repo.GetAsync(id);
+
+            if (entity == null)
+                return false;
+
+            imageHelper.DeleteImage(entity.PictureUrl);
+
+            repo.DeleteAsync(entity);
+            await unitOfWork.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

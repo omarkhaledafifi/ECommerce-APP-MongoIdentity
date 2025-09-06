@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Services.Abstraction;
-using Services;
+﻿using Services.Abstraction;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs.Products;
 using Shared;
@@ -14,10 +8,6 @@ namespace presentation.Controllers
 {
     public class ProductsController(IServiceManager serviceManager) : BaseController
     {
-        //GetAllProducts => IEnumrable<ProductResponse>
-        //GetProduct
-        //GetBrands
-        //GetTypes
         [HttpGet]
         public async Task<ActionResult<PaginatedResponse<ProductResponse>>> GetAllProducts([FromQuery] ProductQueryParameters parameters) //GET   BaseUrl/api/Products
         {
@@ -31,20 +21,30 @@ namespace presentation.Controllers
             return Ok(product);
         }
 
-        [HttpGet("brands")]
-        public async Task<ActionResult<IEnumerable<BrandResponse>>> GetBrands() //GET   BaseUrl/api/Products/brands
+        [HttpPost]
+        public async Task<ActionResult<ProductResponse>> CreateProduct([FromForm] CreateProductRequest request) //POST   BaseUrl/api/Products
         {
-            var brands = await serviceManager.ProductService.GetBrandsAsync();
-            return Ok(brands);
+            var product = await serviceManager.ProductService.CreateProductAsync(request);
+            return Ok(product);
         }
 
-        [HttpGet("types")]
-        public async Task<ActionResult<IEnumerable<TypeResponse>>> GetTypes() //GET   BaseUrl/api/Products/types
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ProductResponse>> UpdateProduct(int id, [FromForm] UpdateProductRequest request) //PUT   BaseUrl/api/Products/18
         {
-            var types = await serviceManager.ProductService.GetTypesAsync();
-            return Ok(types);
+            var product = await serviceManager.ProductService.UpdateProductAsync(id, request);
+            if (product == null)
+                return NotFound();
+            return Ok(product);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProduct(int id) //DELETE   BaseUrl/api/Products/18
+        {
+            var result = await serviceManager.ProductService.DeleteProductAsync(id);
+            if (!result)
+                return NotFound();
+            return NoContent();
+        }
 
     }
 }
