@@ -1,14 +1,17 @@
+using AutoMapper;
 using Domain.Contracts;
+using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using persistence.Data;
 using persistence.Repositories;
-using AutoMapper;
+using Services;
+using Services.Abstraction;
+using Services.Abstraction.CQRS;
+using Services.CQRS.Product.Orchestrators;
+using Services.MappingProfiles;
 //using AutoMapper.Extensions.Microsoft.DependencyInjection;
 using System.Runtime.InteropServices;
-using Services.Abstraction;
-using Services;
-using Services.MappingProfiles;
-using Microsoft.AspNetCore.Identity;
 
 
 namespace ECommerce.API
@@ -37,8 +40,11 @@ namespace ECommerce.API
             .AddDefaultTokenProviders();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(Services.AssemblyReference).Assembly);
+            builder.Services.AddMediatR(typeof(AssemblyReference).Assembly);
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<IImageHelper, ImageHelper>();
+            builder.Services.AddScoped<ICreateProductCommandOrchestrator, CreateProductCommandOrchestrator>();
+            builder.Services.AddScoped<IUpdateProductCommandOrchestrator, UpdateProductCommandOrchestrator>();
             builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
