@@ -30,13 +30,17 @@ namespace persistence.Repositories
             => trackChanges ? await _storeContext.Set<TEntity>().ToListAsync()
             : await _storeContext.Set<TEntity>().AsNoTracking().ToListAsync();
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity> specifications)
-            => await SpecificationsEvaluator.CreateQuery(_storeContext.Set<TEntity>(), specifications).ToListAsync();
+        public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity> specifications, bool trackChanges = false)
+            => trackChanges ? await SpecificationsEvaluator.CreateQuery(_storeContext.Set<TEntity>(), specifications).ToListAsync()
+            :await SpecificationsEvaluator.CreateQuery(_storeContext.Set<TEntity>(), specifications).AsNoTracking().ToListAsync();
 
-        public async Task<TEntity?> GetAsync(Tkey id) => await _storeContext.Set<TEntity>().FindAsync(id);
+        public async Task<TEntity?> GetAsync(Tkey id, bool trackChanges = false) 
+            => trackChanges ? await _storeContext.Set<TEntity>().FirstOrDefaultAsync(e => e.Id!.Equals(id)) 
+            : await _storeContext.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(e => e.Id!.Equals(id));
 
-        public async Task<TEntity?> GetAsync(ISpecification<TEntity> specifications)
-            => await SpecificationsEvaluator.CreateQuery(_storeContext.Set<TEntity>(), specifications).FirstOrDefaultAsync();
+        public async Task<TEntity?> GetAsync(ISpecification<TEntity> specifications, bool trackChanges = false)
+            => trackChanges ? await SpecificationsEvaluator.CreateQuery(_storeContext.Set<TEntity>(), specifications).FirstOrDefaultAsync()
+            : await SpecificationsEvaluator.CreateQuery(_storeContext.Set<TEntity>(), specifications).AsNoTracking().FirstOrDefaultAsync();
 
         public void UpdateAsync(TEntity entity) => _storeContext.Set<TEntity>().Update(entity);
     }
