@@ -4,11 +4,6 @@ using Services.Abstraction;
 using Services.Abstraction.CQRS;
 using Shared.CQRS.Product;
 using Shared.DTOs.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.CQRS.Product.Orchestrators
 {

@@ -12,7 +12,8 @@ namespace presentation.Controllers
     public class ProductsController(IServiceManager serviceManager,
         IMediator mediator,
         ICreateProductCommandOrchestrator createProductOrchestrator,
-        IUpdateProductCommandOrchestrator updateProductOrchestrator) : BaseController
+        IUpdateProductCommandOrchestrator updateProductOrchestrator,
+        IDeleteProductCommandOrchestrator deleteProductOrchestrator) : BaseController
     {
         [HttpGet]
         public async Task<ActionResult<PaginatedResponse<ProductResponse>>> GetAllProducts([FromQuery] ProductQueryParameters parameters) //GET   BaseUrl/api/Products
@@ -50,7 +51,8 @@ namespace presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id) //DELETE   BaseUrl/api/Products/18
         {
-            var result = await serviceManager.ProductService.DeleteProductAsync(id);
+            var result = await deleteProductOrchestrator.DeleteProductAsync(id);
+            //await serviceManager.ProductService.DeleteProductAsync(id);
             if (!result)
                 return NotFound();
             return NoContent();

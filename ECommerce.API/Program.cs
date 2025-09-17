@@ -44,6 +44,7 @@ namespace ECommerce.API
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<IImageHelper, ImageHelper>();
             builder.Services.AddScoped<ICreateProductCommandOrchestrator, CreateProductCommandOrchestrator>();
+            builder.Services.AddScoped<IDeleteProductCommandOrchestrator, DeleteProductCommandOrchestrator>();
             builder.Services.AddScoped<IUpdateProductCommandOrchestrator, UpdateProductCommandOrchestrator>();
             builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             

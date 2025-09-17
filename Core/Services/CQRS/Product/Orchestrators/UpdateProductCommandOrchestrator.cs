@@ -13,11 +13,12 @@ using System.Threading.Tasks;
 
 namespace Services.CQRS.Product.Orchestrators
 {
-    public class UpdateProductCommandOrchestrator(IMediator mediator, IImageHelper imageHelper, IUnitOfWork unitOfWork, IMapper mapper) : IUpdateProductCommandOrchestrator
+    public class UpdateProductCommandOrchestrator(IMediator mediator, IImageHelper imageHelper) : IUpdateProductCommandOrchestrator
     {
         public async Task<ProductResponse> UpdateProductAsync(int id, UpdateProductRequest request)
         {
-            var product = await unitOfWork.GetRepository<Domain.Entities.Product, int>().GetAsync(id);
+            //var product = await unitOfWork.GetRepository<Domain.Entities.Product, int>().GetAsync(id);
+            var product = await mediator.Send(new GetProductByIdQuery(id));
             if (product == null)
                 return null;
             if (!(request.PictureUrl == null || request.PictureUrl.Length == 0) && imageHelper.DeleteImage(product.PictureUrl))
@@ -26,7 +27,7 @@ namespace Services.CQRS.Product.Orchestrators
 
             var updatedProduct = await mediator.Send(new UpdateProductCommand(
                 id,
-                string.IsNullOrEmpty(request.ProductName) ? product.ProductName : request.ProductName,
+                string.IsNullOrEmpty(request.ProductName) ? product.Name : request.ProductName,
                 request.Price <= 0 ? product.Price : request.Price,
                 string.IsNullOrEmpty(request.Description) ? product.Description : request.Description,
                 product.PictureUrl,
