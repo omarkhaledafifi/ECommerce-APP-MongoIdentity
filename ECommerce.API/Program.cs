@@ -10,6 +10,8 @@ using Services.Abstraction;
 using Services.Abstraction.CQRS;
 using Services.CQRS.Product.Orchestrators;
 using Services.MappingProfiles;
+using Services.RabbitMQ;
+
 //using AutoMapper.Extensions.Microsoft.DependencyInjection;
 using System.Runtime.InteropServices;
 
@@ -46,6 +48,9 @@ namespace ECommerce.API
             builder.Services.AddScoped<ICreateProductCommandOrchestrator, CreateProductCommandOrchestrator>();
             builder.Services.AddScoped<IDeleteProductCommandOrchestrator, DeleteProductCommandOrchestrator>();
             builder.Services.AddScoped<IUpdateProductCommandOrchestrator, UpdateProductCommandOrchestrator>();
+
+            builder.Services.AddScoped<IRabbitMQPublisherService, RabbitMQPublisherService>();
+            builder.Services.AddHostedService<RabbitMQConsumerService>();
             builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
