@@ -30,8 +30,8 @@ namespace Services.CQRS.Product.Orchestrators
 
             // Publish message to RabbitMQ
             var message = mapper.Map<ProductCreatedMessage>(product);
-            string CoddedMessage = System.Text.Json.JsonSerializer.Serialize(message);
-            await rabbitMQPublisher.PublishMessage("Product", "Key.Added", CoddedMessage);
+            string TextMessage = System.Text.Json.JsonSerializer.Serialize(message);
+            await rabbitMQPublisher.PublishMessage("Product", "Key.Added", TextMessage);
 
             return mapper.Map<ProductResponse>(product);
         }

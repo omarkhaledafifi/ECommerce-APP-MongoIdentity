@@ -34,7 +34,8 @@ namespace Services.RabbitMQ
 
         public async Task CreateExchange(string exchangeName, string type = "direct")
         {
-            await _channel.ExchangeDeclareAsync(exchange: exchangeName, type: type);
+            //added ",durable: true" for the data seeding
+            await _channel.ExchangeDeclareAsync(exchange: exchangeName, type: type, durable: true); 
         }
 
         public async Task CreateQueue(string queueName)
@@ -42,6 +43,7 @@ namespace Services.RabbitMQ
             await _channel.QueueDeclareAsync(queue: queueName,
                                  durable: true,
                                  autoDelete: false,
+                                 exclusive: false,
                                  arguments: null);
         }
 

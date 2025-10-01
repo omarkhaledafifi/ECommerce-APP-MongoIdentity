@@ -31,8 +31,8 @@ namespace Services.RabbitMQ
         {
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += Consumer_ReceivedAync; // push mechanism
-
             await _channel.BasicConsumeAsync("Added_Products", false, consumer);
+            await _channel.BasicConsumeAsync("Deleted_Products", false, consumer);
         }
 
         private async Task Consumer_ReceivedAync(object sender, BasicDeliverEventArgs @event)
@@ -54,7 +54,6 @@ namespace Services.RabbitMQ
             {
                 //Acknowledge the message regardless of success or failure to prevent re-delivery
                 await _channel.BasicAckAsync(@event.DeliveryTag, false);
-
             }
         }
 

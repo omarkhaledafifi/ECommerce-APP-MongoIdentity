@@ -83,6 +83,7 @@ namespace ECommerce.API
                 using var scope = App.Services.CreateScope();
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
                 await dbInitializer.InitailizeAsync();
+                await dbInitializer.InitializeRabbitMQAsync();
                 await dbInitializer.InitailizeIdentityAsync();
             }
         }

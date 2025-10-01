@@ -1,6 +1,7 @@
 ﻿using Domain.Contracts;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Services.Abstraction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace persistence.Data
 {
     public class DbInitializer(StoreContext storeContext, UserManager<ApplicationUser> _users,
-        RoleManager<ApplicationRole> _roles) : IDbInitializer
+        RoleManager<ApplicationRole> _roles, IRabbitMQPublisherService rabbitMQPublisher) : IDbInitializer
     {
         public async Task InitailizeAsync()
         {
@@ -90,6 +91,23 @@ namespace persistence.Data
                 await _users.AddToRoleAsync(admin, "Admin");
                 await _users.AddToRoleAsync(super, "SuperAdmin");
             }
+        }
+        public async Task InitializeRabbitMQAsync()
+        {
+            const string exchangeName = "Product";
+            const string addedQueue = "Added_Products";
+            const string deletedQueue = "Deleted_Products";
+
+            // 1. Create exchange
+            await rabbitMQPublisher.CreateExchange(exchangeName, "direct");
+
+            // 2. Create queues
+            await rabbitMQPublisher.CreateQueue(addedQueue);
+            await rabbitMQPublisher.CreateQueue(deletedQueue);
+
+            // 3. Bind queues
+            await rabbitMQPublisher.BindQueue(addedQueue, exchangeName, "Key.Added");
+            await rabbitMQPublisher.BindQueue(deletedQueue, exchangeName, "Key.Deleted");
         }
     }
 }

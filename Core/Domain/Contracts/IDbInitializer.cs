@@ -10,5 +10,6 @@ namespace Domain.Contracts
     {
         public Task InitailizeAsync();
         public Task InitailizeIdentityAsync();
+        public Task InitializeRabbitMQAsync();
     }
 }
