@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Shared.DTOs.Products;
+using Shared.RabbitMQ;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,11 @@ namespace Services.MappingProfiles
             .ForMember(dest => dest.BrandId, opt => opt.MapFrom(src => src.BrandId))
             .ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.TypeId))
             .ForMember(dest => dest.PictureUrl, opt => opt.Ignore());
+
+            // Mapping for RabbitMQ message
+            CreateMap<ProductResponse, ProductCreatedMessage>()
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => "ProductCreatedMessage"))
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.UtcNow));
 
         }
 

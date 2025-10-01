@@ -23,6 +23,7 @@ namespace Services.RabbitMQ
 
         public async Task PublishMessage(string exchangeName, string routingKey, string message)
         {
+            
             byte[] messageBody = System.Text.Encoding.UTF8.GetBytes(message);
 
             await _channel.BasicPublishAsync(exchange: exchangeName,
@@ -51,3 +52,4 @@ namespace Services.RabbitMQ
                                 routingKey: routingKey);
         }
     }
+}

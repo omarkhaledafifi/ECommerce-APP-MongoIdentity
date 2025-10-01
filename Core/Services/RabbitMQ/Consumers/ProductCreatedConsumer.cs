@@ -19,6 +19,21 @@ namespace Services.RabbitMQ.Consumers
         public void Consume(BasicMessage basicMessage)
         {
             var message = basicMessage as ProductCreatedMessage;
+            Console.WriteLine($"""
+                the product with the next data was Created.
+                Product :
+                Date : {message.Date},
+                Type : {message.Type},
+                Id : {message.Id},
+                Name : {message.Name},
+                Description : {message.Description},
+                PictureUrl : {message.PictureUrl},
+                Price : {message.Price},
+                BrandId : {message.BrandId},
+                BrandName : {message.BrandName},
+                TypeId : {message.TypeId},
+                TypeName : {message.TypeName}
+                """);
 
         }
     }

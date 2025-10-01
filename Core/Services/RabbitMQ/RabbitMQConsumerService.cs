@@ -52,7 +52,7 @@ namespace Services.RabbitMQ
             }
             finally
             {
-                // Acknowledge the message regardless of success or failure to prevent re-delivery
+                //Acknowledge the message regardless of success or failure to prevent re-delivery
                 await _channel.BasicAckAsync(@event.DeliveryTag, false);
 
             }
@@ -60,10 +60,10 @@ namespace Services.RabbitMQ
 
         private void InvokeConsumer(BasicMessage basicMessage)
         {
-            var namespaceName = "OnionTemplate.MessageBroker.Consumers";
+            var namespaceName = "Services.RabbitMQ.Consumers";
             var typeName = basicMessage.Type.Replace("Message", "Consumer");
 
-            Type type = Type.GetType($"{namespaceName}.{typeName},OnionTemplate");
+            Type type = Type.GetType($"{namespaceName}.{typeName},{typeof(AssemblyReference).Assembly.GetName().Name}");
 
 
             var consumer = Activator.CreateInstance(type, _mediator);
@@ -76,8 +76,8 @@ namespace Services.RabbitMQ
         private BasicMessage GetMessage(string message)
         {
             var basicMessage = System.Text.Json.JsonSerializer.Deserialize<BasicMessage>(message);
-            var namesapce = "OnionTemplate.MessageBroker.Messages";
-            Type type = Type.GetType($"{namesapce}.{basicMessage?.Type},OnionTemplate")!;
+            var namesapce = "Shared.RabbitMQ";
+            Type type = Type.GetType($"{namesapce}.{basicMessage?.Type},{typeof(BasicMessage).Assembly.GetName().Name}")!;
 
             return System.Text.Json.JsonSerializer.Deserialize(message, type) as BasicMessage;
         }
